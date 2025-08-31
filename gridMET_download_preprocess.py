@@ -39,7 +39,7 @@ def download_file(url, local_path):
                 for chunk in response.iter_content(chunk_size=8192):
                     f.write(chunk)
         except Exception as e:
-            print(f"❌ Failed to download {url}: {e}")
+            print(f" Failed to download {url}: {e}")
 
 def extract_variable(ds, varname):
     """
@@ -78,7 +78,7 @@ def apply_scale_and_offset(da, raw_da):
     return da
 
 def process_variable_year(var, year):
-    print(f"📦 Processing {var} for {year}...")
+    print(f" Processing {var} for {year}...")
     url = f"https://www.northwestknowledge.net/metdata/data/{var}_{year}.nc"
     local_path = os.path.join(output_dir, f"{var}_{year}.nc")
 
@@ -114,7 +114,7 @@ def process_variable_year(var, year):
 
 df_all_years = []
 
-for year in tqdm(years, desc="📆 Processing years"):
+for year in tqdm(years, desc=" Processing years"):
     df_year = pd.DataFrame()
     for var in variables:
         try:
@@ -124,7 +124,7 @@ for year in tqdm(years, desc="📆 Processing years"):
             else:
                 df_year = df_year.join(df_var, how="outer")
         except Exception as e:
-            print(f"⚠️ Error processing {var}_{year}: {e}")
+            print(f" Error processing {var}_{year}: {e}")
     df_all_years.append(df_year)
 
 # ----------------------------
@@ -135,4 +135,5 @@ df_final = pd.concat(df_all_years)
 df_final.index.name = "date"
 df_final.sort_index(inplace=True)
 df_final.to_csv(output_csv)
-print(f"\n✅ Saved optimized basin-averaged climate data to: {output_csv}")
+print(f"\n Saved optimized basin-averaged climate data to: {output_csv}")
+
