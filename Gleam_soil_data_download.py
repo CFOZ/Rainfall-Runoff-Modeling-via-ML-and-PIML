@@ -25,10 +25,10 @@ def create_sftp_session():
         transport = paramiko.Transport((SFTP_HOST, SFTP_PORT))
         transport.connect(username=SFTP_USER, password=SFTP_PASS)
         sftp = paramiko.SFTPClient.from_transport(transport)
-        print("✅ SFTP connection established.")
+        print(" SFTP connection established.")
         return sftp, transport
     except Exception as e:
-        print("❌ SFTP connection failed:", e)
+        print(" SFTP connection failed:", e)
         return None, None
 
 def download_and_clip(var, year, basin_gdf, sftp):
@@ -39,15 +39,15 @@ def download_and_clip(var, year, basin_gdf, sftp):
     clipped_path = os.path.join(output_dir, clipped_fname)
 
     if not os.path.exists(local_path):
-        print(f"⬇️ Downloading {remote_path} ...")
+        print(f" Downloading {remote_path} ...")
         try:
             sftp.get(remote_path, local_path)
-            print("✅ Downloaded:", fname)
+            print(" Downloaded:", fname)
         except Exception as e:
-            print("❌ SFTP download error:", e)
+            print(" SFTP download error:", e)
             return
     else:
-        print(f"📦 Cached locally: {fname}")
+        print(f" Cached locally: {fname}")
 
     try:
         ds = xr.open_dataset(local_path, engine="netcdf4")
@@ -63,18 +63,18 @@ def download_and_clip(var, year, basin_gdf, sftp):
         clipped.rio.write_crs("EPSG:4326", inplace=True)
         clipped.to_netcdf(clipped_path)
 
-        print(f"✅ Clipped data saved to {clipped_fname}")
+        print(f" Clipped data saved to {clipped_fname}")
         # os.remove(local_path)
-        # print(f"🗑️ Deleted original file: {fname}")
+        # print(f" Deleted original file: {fname}")
     except Exception as e:
-        print(f"❌ Error processing {fname}:", e)
+        print(f" Error processing {fname}:", e)
 
 # --- Load Watershed ---
 try:
     basin = gpd.read_file(shapefile_path).to_crs("EPSG:4326")
-    print("✅ Watershed shapefile loaded.")
+    print(" Watershed shapefile loaded.")
 except Exception as e:
-    print("❌ Failed to load shapefile:", e)
+    print(" Failed to load shapefile:", e)
     exit()
 
 # --- Execute Download & Clip ---
@@ -83,10 +83,11 @@ if not sftp:
     exit()
 
 for var in variables:
-    print(f"\n🔄 Downloading & clipping variable: {var}")
+    print(f"\n Downloading & clipping variable: {var}")
     for year in years:
         download_and_clip(var, year, basin, sftp)
 
 sftp.close()
 transport.close()
-print("\n✅ All files downloaded and clipped.")
+print("\n All files downloaded and clipped.")
+
